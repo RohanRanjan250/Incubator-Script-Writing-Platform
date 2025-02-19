@@ -29,6 +29,12 @@ def signup():
 
         password_hash = bcrypt.hashpw(password, bcrypt.gensalt())
 
+        cursor.execute("SELECT * FROM register WHERE email_id = %s", (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user > 0:
+            return jsonify({"error": "Email already registered"}), 400 
+
         cursor.execute("INSERT INTO register (first_name, last_name, email_id, password) VALUES (%s, %s, %s, %s)",
                         (first_name, last_name, email, password_hash))
         db.commit()
@@ -37,9 +43,9 @@ def signup():
     except mysql.connector.IntegrityError:
         return jsonify({"error": "Email already registered"}), 400
     
-    except Exception as e:
-        print("Signup Error:", e) 
-        return jsonify({"error": "Something went wrong"}), 500
+    # except Exception as e:
+    #     print("Signup Error:", e) 
+    #     return jsonify({"error": "Something went wrong"}), 500
 
 
 @app.route('/login', methods=['POST'])
@@ -57,7 +63,7 @@ def login():
         return jsonify({"error": "Invalid email or password"}), 401
     
 if __name__ == '__main__':
-    app.run(debug=True, port=6000) 
+    app.run(debug=True, port=3000) 
 
 
 
