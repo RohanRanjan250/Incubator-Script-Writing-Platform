@@ -32,7 +32,7 @@ def signup():
         cursor.execute("SELECT * FROM register WHERE email_id = %s", (email,))
         existing_user = cursor.fetchone()
 
-        if existing_user > 0:
+        if existing_user:
             return jsonify({"error": "Email already registered"}), 400 
 
         cursor.execute("INSERT INTO register (first_name, last_name, email_id, password) VALUES (%s, %s, %s, %s)",
@@ -43,9 +43,9 @@ def signup():
     except mysql.connector.IntegrityError:
         return jsonify({"error": "Email already registered"}), 400
     
-    # except Exception as e:
-    #     print("Signup Error:", e) 
-    #     return jsonify({"error": "Something went wrong"}), 500
+    except Exception as e:
+        print("Signup Error:", e) 
+        return jsonify({"error": "Something went wrong"}), 500
 
 
 @app.route('/login', methods=['POST'])
